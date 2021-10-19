@@ -1,5 +1,5 @@
 #+title: Emacs From Scratch Configuration
-#+PROPERTY: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
+#+PROPERTY: header-args:emacs-lisp :tangle ./init.el :mrequirekdirp yes
 * Package System Setup
 #+begin_src emacs-lisp
     ;; Initialize package sources
@@ -72,7 +72,7 @@
   :init (load-theme 'doom-dracula t))
 #+end_src
 
-ini** Modeline
+** Modeline
 #+begin_src emacs-lisp 
 (use-package all-the-icons)
 
@@ -262,242 +262,252 @@ Functionalities:
 + Literate Coding 
 ** Basic Config
 #+begin_src emacs-lisp
-  (use-package org
-    :bind
-    (("C-c c" . org-capture)
-     ("C-c a" . org-agenda)
-     ("C-c M-s" . org-store-link))
 
-    ;; :hook (org-mode . efs/org-mode-setup)
-    :config
-    (setq org-ellipsis " ▾")
-    ;; (efs/org-font-setup)
+      (defun efs/org-mode-setup ()
+        (org-indent-mode 1)
+        ;; (variable-pitch-mode 1)
+        (visual-line-mode 1)
+        )
 
-    (setq org-agenda-start-with-log-mode t)
-    (setq org-log-done 'time)
-    (setq org-log-into-drawer t)
+        (use-package org
+          :bind
+          (("C-c c" . org-capture)
+           ("C-c a" . org-agenda)
+           ("C-c M-s" . org-store-link))
 
-    (setq org-agenda-files
-	  '("~/Notes/RoamNotes/"
-	    "~/Notes/OrgNotes/Birthday.org"
-	    "~/Notes/OrgNotes/Habits.org"
-	    "~/Notes/OrgNotes/Tasks.org"
-	    "~/Notes/OrgNotes/Homework.org"
-	    )
-	  )
+          :hook (org-mode . efs/org-mode-setup)
+          :config
+          (setq org-ellipsis " ▾")
+          ;; (efs/org-font-setup)
 
-    )
+          (setq org-agenda-start-with-log-mode t)
+          (setq org-log-done 'time)
+          (setq org-log-into-drawer t)
 
-  ;;org-habit: extra information about the streak of habit in the agenda view
-  (require 'org-habit)
-  (add-to-list 'org-modules 'org-habit)
-  (setq org-habit-graph-column 60)
+          (setq org-agenda-files
+                '("~/Notes/RoamNotes/"
+                  "~/Notes/OrgNotes/Birthday.org"
+                  "~/Notes/OrgNotes/Habits.org"
+                  "~/Notes/OrgNotes/Tasks.org"
+                  "~/Notes/OrgNotes/Homework.org"
+                  "~/Notes/OrgNotes/Journal.org"
 
-  ;;set todo keywords for different workflows
-  (setq org-todo-keywords
-      '((sequence "TODO(t)" "WEEK(w)" "NEXT(n)" "|" "DONE(d!) ABORT(a)")
-	(sequence "BACKLOG(b)" "PLAN(p)" "READY(Ar)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)"))
-	)
+                  )
+                )
 
-					  ;refile: archive DONE todos and so on
-   (setq org-refile-targets
-      '(("Archive.org" :maxlevel . 1)
-	("Tasks.org" :maxlevel . 1)))
+          )
 
-  ;; Save Org buffers after refiling!
-  (advice-add 'org-refile :after 'org-save-all-org-buffers)
+        ;;org-habit: extra information about the streak of habit in the agenda view
+        (require 'org-habit)
+        (add-to-list 'org-modules 'org-habit)
+        (setq org-habit-graph-column 60)
 
-  ;;tags existing that would be handy before using it.
-  (setq org-tag-alist
-      '((:startgroup)
-	 ; Put mutually exclusive tags here
-	 (:endgroup)
-	 ("@errand" . ?E)
-	 ("@home" . ?H)
-	 ("@work" . ?W)
-	 ("agenda" . ?a)
-	 ("publish" . ?P)
-	 ("planning" . ?p)
-	 ("batch" . ?b)
-	 ("note" . ?n)
-	 ("idea" . ?i)
-	 ("machine" . ?m)
-	 ("principle" . ?r) 
-	 )
-      )
+        ;;set todo keywords for different workflows
+        (setq org-todo-keywords
+            '((sequence "TODO(t)" "WEEK(w)" "NEXT(n)" "|" "DONE(d!) ABORT(a)")
+              (sequence "BACKLOG(b)" "PLAN(p)" "READY(Ar)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)"))
+              )
 
-					  ;custom agenda views
-   ;; Configure custom agenda views
-    (setq org-agenda-custom-commands
-     '(("d" "Dashboard"
-       ((agenda "" ((org-deadline-warning-days 7)))
-	(todo "NEXT"
-	      ((org-agenda-overriding-header "Next Tasks")))
-	 (todo "WEEK"
-	  ((org-agenda-overriding-header "Week Tasks")))
-	(tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
+                                                ;refile: archive DONE todos and so on
+         (setq org-refile-targets
+            '(("Archive.org" :maxlevel . 1)
+              ("Tasks.org" :maxlevel . 1)))
 
-      ("n" "Next Tasks"
-       ((todo "NEXT"
-	  ((org-agenda-overriding-header "Next Tasks")))))
+        ;; Save Org buffers after refiling!
+        (advice-add 'org-refile :after 'org-save-all-org-buffers)
 
-      ("W" "Work Tasks" tags-todo "+work-email")
+        ;;tags existing that would be handy before using it.
+        (setq org-tag-alist
+            '((:startgroup)
+               ; Put mutually exclusive tags here
+               (:endgroup)
+               ("@errand" . ?E)
+               ("@home" . ?H)
+               ("@work" . ?W)
+               ("agenda" . ?a)
+               ("publish" . ?P)
+               ("planning" . ?p)
+               ("batch" . ?b)
+               ("note" . ?n)
+               ("idea" . ?i)
+               ("machine" . ?m)
+               ("principle" . ?r) 
+               )
+            )
 
-      ;; Low-effort next actions
-      ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
-       ((org-agenda-overriding-header "Low Effort Tasks")
-	(org-agenda-max-todos 20)
-	(org-agenda-files org-agenda-files)))
+                                                ;custom agenda views
+         ;; Configure custom agenda views
+          (setq org-agenda-custom-commands
+           '(("d" "Dashboard"
+             ((agenda "" ((org-deadline-warning-days 7)))
+              (todo "NEXT"
+                    ((org-agenda-overriding-header "Next Tasks")))
+               (todo "WEEK"
+                ((org-agenda-overriding-header "Week Tasks")))
+              (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
 
-      ;;homeworks
-      ("h" "Homeworks"
-       tags-todo "+homework")
+            ("n" "Next Tasks"
+             ((todo "NEXT"
+                ((org-agenda-overriding-header "Next Tasks")))))
 
-      ;; view checking workflow status at once
-      ;; commented because I disabled the workflow statuses
+            ("W" "Work Tasks" tags-todo "+work-email")
 
-      ("w" "Workflow Status"
-       ((todo "WAIT"
-	      ((org-agenda-overriding-header "Waiting on External")
-	       (org-agenda-files org-agenda-files)))
-	(todo "REVIEW"
-	      ((org-agenda-overriding-header "In Review")
-	       (org-agenda-files org-agenda-files)))
-	(todo "PLAN"
-	      ((org-agenda-overriding-header "In Planning")
-	       (org-agenda-todo-list-sublevels nil)
-	       (org-agenda-files org-agenda-files)))
-	(todo "BACKLOG"
-	      ((org-agenda-overriding-header "Project Backlog")
-	       (org-agenda-todo-list-sublevels nil)
-	       (org-agenda-files org-agenda-files)))
-	(todo "READY"
-	      ((org-agenda-overriding-header "Ready for Work")
-	       (org-agenda-files org-agenda-files)))
-	(todo "ACTIVE"
-	      ((org-agenda-overriding-header "Active Projects")
-	       (org-agenda-files org-agenda-files)))
-	(todo "COMPLETED"
-	      ((org-agenda-overriding-header "Completed Projects")
-	       (org-agenda-files org-agenda-files)))
-	(todo "CANC"
-	      ((org-agenda-overriding-header "Cancelled Projects")
-	       (org-agenda-files org-agenda-files))))
-       )
-      )
-     )
+            ;; Low-effort next actions
+            ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
+             ((org-agenda-overriding-header "Low Effort Tasks")
+              (org-agenda-max-todos 20)
+              (org-agenda-files org-agenda-files)))
 
-  (defun org-review()
-    "generate sparse tree of current file(with org-occur) for today, yesterday, 7 days ago and 30 days ago"
-    (interactive)
-    (progn
-      (setq year1 (shell-command-to-string "date +%Y"))
-      (setq month1 (shell-command-to-string "date +%m"))
-      (setq day1 (shell-command-to-string "date +%d"))
+            ;;homeworks
+            ("h" "Homeworks"
+             tags-todo "+homework")
 
-      (setq year2 (shell-command-to-string "date -v-1d +%Y"))
-      (setq month2 (shell-command-to-string "date -v-1d +%m"))
-      (setq day2 (shell-command-to-string "date -v-1d +%d"))
+            ;; view checking workflow status at once
+            ;; commented because I disabled the workflow statuses
 
-      (setq year3 (shell-command-to-string "date -v-7d +%Y"))
-      (setq month3 (shell-command-to-string "date -v-7d +%m"))
-      (setq day3 (shell-command-to-string "date -v-7d +%d"))
+            ("w" "Workflow Status"
+             ((todo "WAIT"
+                    ((org-agenda-overriding-header "Waiting on External")
+                     (org-agenda-files org-agenda-files)))
+              (todo "REVIEW"
+                    ((org-agenda-overriding-header "In Review")
+                     (org-agenda-files org-agenda-files)))
+              (todo "PLAN"
+                    ((org-agenda-overriding-header "In Planning")
+                     (org-agenda-todo-list-sublevels nil)
+                     (org-agenda-files org-agenda-files)))
+              (todo "BACKLOG"
+                    ((org-agenda-overriding-header "Project Backlog")
+                     (org-agenda-todo-list-sublevels nil)
+                     (org-agenda-files org-agenda-files)))
+              (todo "READY"
+                    ((org-agenda-overriding-header "Ready for Work")
+                     (org-agenda-files org-agenda-files)))
+              (todo "ACTIVE"
+                    ((org-agenda-overriding-header "Active Projects")
+                     (org-agenda-files org-agenda-files)))
+              (todo "COMPLETED"
+                    ((org-agenda-overriding-header "Completed Projects")
+                     (org-agenda-files org-agenda-files)))
+              (todo "CANC"
+                    ((org-agenda-overriding-header "Cancelled Projects")
+                     (org-agenda-files org-agenda-files))))
+             )
+            )
+           )
 
-      (setq year4 (shell-command-to-string "date -v-30d +%Y"))
-      (setq month4 (shell-command-to-string "date -v-30d +%m"))
-      (setq day4 (shell-command-to-string "date -v-30d +%d"))
-      )
+        (defun org-review()
+          "generate sparse tree of current file(with org-occur) for today, yesterday, 7 days ago and 30 days ago"
+          (interactive)
+          (progn
+            (setq year1 (shell-command-to-string "date +%Y"))
+            (setq month1 (shell-command-to-string "date +%m"))
+            (setq day1 (shell-command-to-string "date +%d"))
 
-    ;;compose the regexp
-    (setq slash "\\")
-    (substring slash 0 0)
-    (setq reg (string-replace "\n" "" (concat "\\" "("
-					      year1 "-" month1 "-" day1 "\\|"
-					      year2 "-" month2 "-" day2 "\\|"
-					      year3 "-" month3 "-" day3 "\\|"
-					      year4 "-" month4 "-" day4 
-					      "\\"  ")"
-					       )))
-    ;;occur
-    (org-occur reg)
-    )
+            (setq year2 (shell-command-to-string "date -v-1d +%Y"))
+            (setq month2 (shell-command-to-string "date -v-1d +%m"))
+            (setq day2 (shell-command-to-string "date -v-1d +%d"))
 
-  (setq org-capture-templates
-      `(("t" "Tasks / Projects")
-	("tt" "Task" entry (file+olp "~/Notes/OrgNotes/Tasks.org" "Inbox")
-	 "* TODO %?\n  %U\n  %a\n  %i" :emptnfy-lines 1)
+            (setq year3 (shell-command-to-string "date -v-7d +%Y"))
+            (setq month3 (shell-command-to-string "date -v-7d +%m"))
+            (setq day3 (shell-command-to-string "date -v-7d +%d"))
 
-	("j" "Journal Entries")
-	("jj" "Journal" entry
-	 (file+olp+datetree "~/Notes/OrgNotes/Journal.org")
-	 "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
-	 ;; ,(dw/read-file-as-string "~/Notes/Templates/Daily.org")
-	 :clock-in :clock-resume
-	 :empty-lines 1)
-	("jm" "Meeting" entry
-	 (file+olp+datetree "~/Notes/OrgNotes/Journal.org")
-	 "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
-	 :clock-in :clock-resume
-	 :empty-lines 1)
+            (setq year4 (shell-command-to-string "date -v-30d +%Y"))
+            (setq month4 (shell-command-to-string "date -v-30d +%m"))
+            (setq day4 (shell-command-to-string "date -v-30d +%d"))
+            )
 
-	("w" "Workflows")
-	("we" "Checking Email" entry (file+olp+datetree "~/Notes/OrgNotes/Journal.org")
-	 "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
+          ;;compose the regexp
+          (setq slash "\\")
+          (substring slash 0 0)
+          (setq reg (string-replace "\n" "" (concat "\\" "("
+                                                    year1 "-" month1 "-" day1 "\\|"
+                                                    year2 "-" month2 "-" day2 "\\|"
+                                                    year3 "-" month3 "-" day3 "\\|"
+                                                    year4 "-" month4 "-" day4 
+                                                    "\\"  ")"
+                                                     )))
+          ;;occur
+          (org-occur reg)
+          )
 
-	("m" "Metrics Capture")
-	("mw" "Weight" table-line (file+headline "~/Notes/OrgNotes/Metrics.org" "Weight")
-	 "| %U | %^{Weight} | %^{Notes} |" :kill-buffer t)
-	("me" "Wearing" table-line (file+olp "~/Notes/OrgNotes/Metrics.org" "Wearing" "Log") 
-	 "| %U | %^{Upper} | %^{Lower} | %^{Attachments} | %^{Notes} |" :kill-buffer t)
-	("l" "Study log")
-	("lr" "Review log" entry
-	 (file+olp+datetree "~/Notes/OrgNotes/Review.org")
-	 "* %U %^{content to review} :review: \n %? \n %a"
-	 :empty-lines 1)
-	("lq" "Question log" entry
-	 (file+olp+datetree "~/Notes/OrgNotes/Questions.org")
-	 "* %U %^{Doubt} :question: \n %? \n %a"
-	 :empty-lines 1)
-	("lh" "Homework" entry
-	 (file+olp+datetree "~/Notes/OrgNotes/Homework.org")
-	 "* TODO %U %^{Homework Title} :homework:%^{Module}: \n %? \n %a"
-	 :empty-lines 1)
+        (setq org-capture-templates
+            `(("t" "Tasks / Projects")
+              ("tt" "Task" entry (file+olp "~/Notes/OrgNotes/Tasks.org" "Inbox")
+               "* TODO %?\n  %U\n  %a\n  %i" :emptnfy-lines 1)
 
-	))
-  (setq org-src-fontify-natively t)
+              ("j" "Journal Entries")
+              ("jj" "Journal" entry
+               (file+olp+datetree "~/Notes/OrgNotes/Journal.org")
+               "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
+               ;; ,(dw/read-file-as-string "~/Notes/Templates/Daily.org")
+               :clock-in :clock-resume
+               :empty-lines 1)
+              ("jm" "Meeting" entry
+               (file+olp+datetree "~/Notes/OrgNotes/Journal.org")
+               "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
+               :clock-in :clock-resume
+               :empty-lines 1)
+              ;; ("jr" "Reading" entry
+               ;; (file+olp "~/Notes/OrgNotes/Read.org" "b
+        ;; ooks)
 
+      ;;	 "")
 
-  ;;bullets changed (not sure if I want it totally
-  (use-package org-bullets
-    :after org
-    :hook (org-mode . org-bullets-mode)a
-    :custom
-    (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+              ;; ("w" "Workflows")
+              ;; ("we" "Checking Email" entry (file+olp+datetree "~/Notes/OrgNotes/Journal.org")
+              ;;  "* Checking Email :email:\n\n%?" :clock-in :clock-resume :
+      ;;	 empty-lines 1)
 
-  ; make the text middle (maybe later
-  ;; (defun efs/org-mode-visual-fill ()
-  ;;   (setq visual-fill-column-width 100
-  ;;         visual-fill-column-center-text t)
-  ;;   (visual-fill-column-mode 1))
+              ("m" "Metrics Capture")
+              ("mw" "Weight" table-line (file+headline "~/Notes/OrgNotes/Metrics.org" "Weight")
+               "| %U | %^{Weight} | %^{Notes} |" :kill-buffer t)
+              ("me" "Wearing" table-line (file+olp "~/Notes/OrgNotes/Metrics.org" "Wearing" "Log") 
+               "| %U | %^{Upper} | %^{Lower} | %^{Attachments} | %^{Notes} |" :kill-buffer t)
+              ("l" "Study log")
+              ("lr" "Review log" entry
+               (file+olp+datetree "~/Notes/OrgNotes/Review.org")
+               "* %U %^{content to review} :review: \n %? \n %a"
+               :empty-lines 1)
+              ("lq" "Question log" entry
+               (file+olp+datetree "~/Notes/OrgNotes/Questions.org")
+               "* %U %^{Doubt} :question: \n %? \n %a"
+               :empty-lines 1)
+              ("lh" "Homework" entry
+               (file+olp+datetree "~/Notes/OrgNotes/Homework.org")
+               "* TODO %U %^{Homework Title} :homework:%^{Module}: \n %? \n %a"
+               :empty-lines 1)
 
-  ;; (use-package visual-fill-column
-  ;;   :hook (org-mode . efs/org-mode-visual-fill))
+              ))
+        (setq org-src-fontify-natively t)
 
 
-  (use-package alert)
-  (use-package org-wild-notifier)
+        ;;bullets changed (not sure if I want it totally
+        (use-package org-bullets
+          :after org
+          :hook (org-mode . org-bullets-mode)a
+          :custom
+          (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
-  (org-wild-notifier-mode t)
+        ; make the text middle (maybe later
+        ;; (defun efs/org-mode-visual-fill ()
+        ;;   (setq visual-fill-column-width 100
+        ;;         visual-fill-column-center-text t)
+        ;;   (visual-fill-column-mode 1))
+
+        ;; (use-package visual-fill-column
+        ;;   :hook (org-mode . efs/org-mode-visual-fill))
+
+
+        (use-package alert)
+        (use-package org-wild-notifier)
+
+        (org-wild-notifier-mode t)
 #+end_src
 ** Org-mode UI
 
 *** Font
 #+begin_src emacs-lisp
-  (defun efs/org-mode-setup ()
-    (org-indent-mode)
-    ;; (variable-pitch-mode 1)
-    ;; (visual-line-mode 1)
-    )
 
   ;;
 
@@ -509,14 +519,14 @@ Functionalities:
 
   ;;   ;; Set
     ;; faces for heading levels
-    (dolist (face '((org-level-1 . 1.2)
-		    (org-level-2 . 1.1)
-		    (org-level-3 . 1.05)
-		    (org-level-4 . 1.0)
-		    (org-level-5 . 1.1)
-		    (org-level-6 . 1.1)
-		    (org-level-7 . 1.1)
-		    (org-level-8 . 1.1)))
+    (dolist (face '((org-level-1 . 1.4)
+                    (org-level-2 . 1.3)
+                    (org-level-3 . 1.2)
+                    (org-level-4 . 1.15)
+                    (org-level-5 . 1.1)
+                    (org-level-6 . 1.1)
+                    (org-level-7 . 1.1)
+                    (org-level-8 . 1.1)))
       (set-face-attribute (car face) nil :height (cdr face)))
 
     ;; Ensure that anything that should be fixed-pitch in Org files appears that way
@@ -541,11 +551,13 @@ Functionalities:
 ** Org-mode editing
 #+begin_src emacs-lisp
 
-  (require 'org-tempo)
+    (require 'org-tempo)
 
-  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-  (add-to-list 'org-structure-template-alist '("py" . "src python"))
+    (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+    (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+    (add-to-list 'org-structure-template-alist '("py" . "src python"))
+    (add-to-list 'org-structure-template-alist '("as" . "src asm"))
+  (add-to-list 'org-structure-template-alist '("sq" . "src sql"))
 #+end_src
 ** Babel Settings
 *** Babel Languages
@@ -594,6 +606,58 @@ Functionalities:
 (setq org-roam-graph-executable "dot")
 ;; (setq org-roam-graph-executable "dot")
 #+end_src
+*** Org-Roam-UI
+[[https://github.com/org-roam/org-roam-ui#straightuse-package][github:org-roam-ui]]
+hit ~M-x org-roam-ui-mode RET~
+It will start a web server on 127.0.0.1:35901 and connect to it via WebSocket(real-time update)
+This is the way via straight
+#+begin_src emacs-lisp
+  ;; (use-package org-roam-ui
+  ;;   :straight
+  ;;     (:host github :repo "org-roam/org-roam-ui" :branch "main" :files ("*.el" "out"))
+  ;;     :after org-roam
+  ;; ;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
+  ;; ;;         a hookable mode anymore, you're advised to pick something yourself
+  ;; ;;         if you don't care about startup time, use
+  ;; ;;  :hook (after-init . org-roam-ui-mode)
+  ;;     :config
+  ;;     (setq org-roam-ui-sync-theme t
+  ;;           org-roam-ui-follow t
+  ;;           org-roam-ui-update-on-save t
+  ;;           org-roam-ui-open-on-start t))
+#+end_src
+
+And this is the way mannually.
+I mannualy installed ~websocket~ and ~simple-httpd~
+#+begin_src emacs-lisp
+  (add-to-list 'load-path "~/.emacs.d/site-lisp/org-roam-ui")
+  (load-library "org-roam-ui")  
+#+end_src
+* EAF
+** eaf
+#+begin_src emacs-lisp
+     ;;PyQt5 path
+
+   (setq exec-path (append exec-path '("~/opt/anaconda3/lib/python3.8/site-packages/PyQt5")))
+
+   (setq exec-path (append exec-path '("/Users/hermanhe/Library/Python/3.8/bin")))
+
+         (add-to-list 'load-path "~/.emacs.d/site-lisp/emacs-application-framework/")
+         (require 'eaf)
+       (require 'eaf-browser)
+
+
+  (add-to-list 'load-path "~/.emacs.d/site-lisp/emacs-application-framework/app/pdf-viewer/")
+
+  (require 'eaf-pdf-viewer)
+
+#+end_src
+** eaf-browser
+#+begin_src emacs-lisp
+  (add-to-list 'load-path "~/.emacs.d/site-lisp/eaf-browser/eaf-browser/")
+ (require 'eaf-browser)
+
+#+end_src
 * Development
 ** Some Editing-utils
 *** Moving Lines
@@ -620,35 +684,38 @@ Functionalities:
 
 #+end_src
 ** Projectile
+I deleted the "p" in "emacs-lisp" to diable it from tangling.
 #+begin_src emacs-lisp
-(use-package projectile
-  :diminish projectile-mode
-  :config (projectile-mode)
-  :custom ((projectile-completion-system 'ivy))
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
-  :init
-  ;; NOTE: Set this to the folder where you keep your Git repos!
-  (when (file-directory-p "~/playground")
-    (setq projectile-project-search-path '("~/playground")))
-  (setq projectile-switch-project-action #'projectile-dired))
+ (use-package projectile
+   :diminish projectile-mode
+   :config (projectile-mode)
+   :custom ((projectile-completion-system 'ivy))
+   :bind-keymap
+   ("C-c p" . projectile-command-map)
+   :init
+   ;; NOTE: Set this to the folder where you keep your Git repos!
+   (when (file-directory-p "~/playground")
+     (setq projectile-project-search-path '("~/playground")))
+   (setq projectile-switch-project-action 'projectile-dired))
 
-(use-package counsel-projectile
-  :config (counsel-projectile-mode))
-#+end_src
+ (use-package counsel-projectile
+   :config (counsel-projectile-mode))
+ +end_src
 ** Magit
-#+begin_src emacs-lisp
-  (use-package magit
-    :custom
-    (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+ #+begin_src emacs-lisp
+(require 'magit)
+ (use-package magit)
+         ;; :custom
+         ;; (magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1)
+     ;; )
 
-  ;; (use-package evil-magit
-  ;;   :after magit)
+       ;; (use-package evil-magit
+       ;;   :after magit)
 
-  ;; NOTE: Make sure to configure a GitHub token before using this package!
-  ;; - https://magit.vc/manual/forge/Token-Creation.html#Token-Creation
-  ;; - https://magit.vc/manual/ghub/Getting-Started.html#Getting-Started
-  (use-package forge)
+       ;; NOTE: Make sure to configure a GitHub token before using this package!
+       ;; - https://magit.vc/manual/forge/Token-Creation.htmlToken-Creation
+       ;; - https://magit.vc/manual/ghub/Getting-Started.htmlGetting-Started
+       (use-package forge)
 #+end_src
 ** Rainbow Delimiters
 #+begin_src emacs-lisp
@@ -656,9 +723,32 @@ Functionalities:
   :hook (prog-mode . rainbow-delimiters-mode))
 #+end_src
 * SQL
-** path to mysql exec
+** path to mysql 
 #+begin_src emacs-lisp
+  (add-to-list 'exec-path "/usr/local/bin")
 
 
-  (setq sql-mysql-program "/usr/local/bin/mysql")
+
+
+
+
+
+
+
+
 #+end_src
+* Asm mode
+I write assembly program in asm-mode
+it indents weird. does not align correctly, but indent to the right.
+#+begin_src emacs-lisp
+(defun my-asm-mode-hook ()
+  ;; you can use `comment-dwim' (M-;) for this kind of behaviour anyway
+  (local-unset-key (vector asm-comment-char))
+  ;; asm-mode sets it locally to nil, to "stay closer to the old TAB behaviour".
+  (setq tab-always-indent (default-value 'tab-always-indent)))
+
+(add-hook 'asm-mode-hook #'my-asm-mode-hook)
+#+end_src
+* Eshell
+** Eshell PATH
+The 
