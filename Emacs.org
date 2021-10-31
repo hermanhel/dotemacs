@@ -1155,15 +1155,15 @@ Dired is a built-in file manager for Emacs that does some pretty amazing things!
 #+begin_src emacs-lisp
         (use-package winum
           :bind (
-                 ("C-x w" . 'winum
+                 ("C-x w" . 'winum)
+                  ))
   (winum-mode)
-          )
 #+end_src
 
 ** Winner mode
 #+begin_src emacs-lisp
-  (use-package winner
-    (winner-mode))
+  (use-package winner)
+    (winner-mode)
 #+end_src
 * Applications
 
