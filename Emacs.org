@@ -129,7 +129,7 @@ This section configures basic UI settings that remove unneeded elements to make 
   (tooltip-mode -1)           ; Disable tooltips
   (set-fringe-mode 10)        ; Give some breathing room
 
-  (menu-bar-mode -1)            ; Disable the menu bar
+  (menu-bar-mode 1)            ; Disable the menu bar
 
   ;; Set up the visible bell
   (setq visible-bell t)
@@ -925,6 +925,11 @@ Emacs' built in commenting functionality =comment-dwim= (usually bound to =M-;=)
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
 
+#+end_src
+
+** MySql
+#+begin_src emacs-lisp
+  (setq exec-path (append exec-path '("/usr/local/bin" )))
 #+end_src
 
 * Terminals
