@@ -386,7 +386,7 @@ This section contains the basic configuration for =org-mode= plus the configurat
   
   (defun efs/org-mode-setup ()
     (org-indent-mode)
-    (variable-pitch-mode 1)
+    ;; (variable-pitch-mode 1)
     (visual-line-mode 1))
   
   (use-package org
@@ -417,7 +417,7 @@ This section contains the basic configuration for =org-mode= plus the configurat
     (setq org-habit-graph-column 60)
   
     (setq org-todo-keywords
-      '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
+      '((sequence "TODO(t)" "NEXT(n)" "WEEK" "|" "DONE(d!)")
         (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
   
     (setq org-refile-targets
@@ -571,10 +571,10 @@ The =efs/org-font-setup= function configures various text faces to tweak the siz
                       (org-level-5 . 1.1)
                       (org-level-6 . 1.1)
                       (org-level-7 . 1.1)
-                      (org-level-8 . 1.1))))
+                      (org-level-8 . 1.1)))
   
   
-    (set-face-attribute (car face) nil  :height (cdr face)))
+      (set-face-attribute (car face) nil  :height (cdr face))))
   ;; (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
           ;; (set-face-attribute :height (cdr face))
       ;; Ensure that anything that should be fixed-pitch in Org files appears that way
@@ -653,7 +653,21 @@ Org-roam is a package enabling roam-like note-taking&finding&linking functionali
            ("C-c n i" . 'org-roam-node-insert)
            )
     )
+  (setq org-roam-directory "~/Notes/RoamNotes/")
+  (org-roam-db-autosync-mode)
   #+end_src
+  
+  
+*** Graph
+Org-roam can't find the exec of graphviz by itself. Should append the location of exec of graphviz into exec-pathx
+#+begin_src emacs-lisp
+  (setq exec-path (append exec-path '("/usr/local/Cellar/graphviz/2.49.2/bin" )))
+#+end_src
+A UI using Chakera of react.js is officially provided.
+#+begin_src emacs-lisp
+(add-to-list 'load-path "~/.emacs.d/site-lisp/org-roam-ui")
+(load-library "org-roam-ui")
+#+end_src
 
 * Development
 
