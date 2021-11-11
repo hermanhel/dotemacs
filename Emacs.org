@@ -28,6 +28,20 @@ The following variables are used to tweak some of the configuration pieces for u
 
 In this document I've added links in many places that lead you to documentation for the various packages we use.  If you're looking at this file in Emacs, you can put your cursor on a link and press =C-c C-o= or run =M-x org-open-at-point= to open the link in your web browser.
 
+* System Setup
+
+** environment variables
+~PATH~ variable used by shell. Note that the seperator should be ~":"~
+#+begin_src emacs-lisp
+    (setenv "PATH"
+      (concat
+       "/Library/TeX/texbin" ":" ;; for latex bin
+       
+       (getenv "PATH")
+      )
+    )
+#+end_src
+
 * Startup Performance
 
 #+begin_src emacs-lisp
@@ -393,7 +407,9 @@ This section contains the basic configuration for =org-mode= plus the configurat
     :pin org
     :commands (org-capture org-agenda)
     :bind(("C-c a" . org-agenda)
-          ("C-c c" . org-capture))
+          ("C-c c" . org-capture)
+          ("C-c M-s" . org-store-link)
+          )
     :hook (org-mode . efs/org-mode-setup)
     :config
     (setq org-ellipsis " ▾")
@@ -409,6 +425,7 @@ This section contains the basic configuration for =org-mode= plus the configurat
   '(
     "~/Notes/OrgNotes/"
     "~/Notes/RoamNotes/"
+    "~/Notes/RoamNotes/daily"
           ))
   
   
@@ -669,6 +686,15 @@ A UI using Chakera of react.js is officially provided.
 (load-library "org-roam-ui")
 #+end_src
 
+** Latex
+inline latex need latex and dvipng installed. I have them installed, so I need to guide emacs their locations
+#+begin_src emacs-lisp
+  (setq org-latex-create-formula-image-program 'dvipng)
+  (setq exec-path (append exec-path '("/Library/Tex/texbin" )))
+  (setq org-format-latex-options '(:foreground default :background default :scale 2.5 :html-foreground "Black" :html-background "Transparent" :html-scale 1.0 :matchers
+	     ("begin" "$1" "$" "$$" "\\(" "\\[")))
+#+end_src
+It is now reporting zsh not found command "latex", I don't know how to fix it.
 * Development
 
 ** Languages
@@ -930,6 +956,13 @@ Emacs' built in commenting functionality =comment-dwim= (usually bound to =M-;=)
 ** MySql
 #+begin_src emacs-lisp
   (setq exec-path (append exec-path '("/usr/local/bin" )))
+#+end_src
+
+** Assembly
+the TAB behavior in assembly won't indent, but insert TAB.
+#+begin_src emacs-lisp
+  (use-package 'asm-mode
+    (setq tab-always-indent t))
 #+end_src
 
 * Terminals
