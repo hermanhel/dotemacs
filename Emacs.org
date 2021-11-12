@@ -83,18 +83,18 @@ Emacs has a built in package manager but it doesn't make it easy to automaticall
     (require 'package)
   
     (setq package-archives '(
-                             ;; ("melpa" . "https://melpa.org/packages/")
-                             ;; ("org" . "https://orgmode.org/elpa/")
-                             ;; ("elpa" . "https://elpa.gnu.org/packages/")
+			     ;; ("melpa" . "https://melpa.org/packages/")
+			     ("org" . "https://orgmode.org/elpa/")
+			     ;; ("elpa" . "https://elpa.gnu.org/packages/")
   ;; emacs-china mirror
-                             ;; ("gnu"   . "http://elpa.emacs-china.org/gnu/")
-                             ;; ("melpa" . "http://elpa.emacs-china.org/melpa/")
-                             ;;                            ("org" . "http://elpa.emacs-china.org/org/")
-                            
-                             ;; Tsinghua tuna
-                             ("gnu"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
-                             ("melpa" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
-                             ))
+			     ;; ("gnu"   . "http://elpa.emacs-china.org/gnu/")
+			     ;; ("melpa" . "http://elpa.emacs-china.org/melpa/")
+			     ;;                            ("org" . "http://elpa.emacs-china.org/org/")
+  
+			     ;; Tsinghua tuna
+			     ("gnu"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+			     ("melpa" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
+			     ))
   
     (package-initialize)
     (unless package-archive-contents
