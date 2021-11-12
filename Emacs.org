@@ -33,13 +33,26 @@ In this document I've added links in many places that lead you to documentation 
 ** environment variables
 ~PATH~ variable used by shell. Note that the seperator should be ~":"~
 #+begin_src emacs-lisp
-    (setenv "PATH"
-      (concat
-       "/Library/TeX/texbin" ":" ;; for latex bin
-       
-       (getenv "PATH")
-      )
+  (setenv "PATH"
+    (concat
+     "/Library/TeX/texbin" ":" ;; for latex bin
+  
+     (getenv "PATH")
     )
+    )
+#+end_src
+
+** exec-path-from-shell package
+#+begin_src emacs-lisp
+(use-package exec-path-from-shell)
+(exec-path-from-shell-initialize)
+#+end_src
+
+** recent files
+maintain a list of files recently opened
+#+begin_src emacs-lisp
+(recentf-mode 1)            
+(setq recentf-max-saved-items 50)
 #+end_src
 
 * Startup Performance
@@ -70,14 +83,18 @@ Emacs has a built in package manager but it doesn't make it easy to automaticall
     (require 'package)
   
     (setq package-archives '(
-			     ;; ("melpa" . "https://melpa.org/packages/")
-			     ;; ("org" . "https://orgmode.org/elpa/")
-			     ;; ("elpa" . "https://elpa.gnu.org/packages/")
-  ;; Tsinghua mirror
-			     ("gnu"   . "http://elpa.emacs-china.org/gnu/")
-			     ("melpa" . "http://elpa.emacs-china.org/melpa/")
-			     ("org" . "http://elpa.emacs-china.org/org/")
-			     ))
+                             ;; ("melpa" . "https://melpa.org/packages/")
+                             ;; ("org" . "https://orgmode.org/elpa/")
+                             ;; ("elpa" . "https://elpa.gnu.org/packages/")
+  ;; emacs-china mirror
+                             ;; ("gnu"   . "http://elpa.emacs-china.org/gnu/")
+                             ;; ("melpa" . "http://elpa.emacs-china.org/melpa/")
+                             ;;                            ("org" . "http://elpa.emacs-china.org/org/")
+                            
+                             ;; Tsinghua tuna
+                             ("gnu"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+                             ("melpa" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
+                             ))
   
     (package-initialize)
     (unless package-archive-contents
@@ -730,6 +747,7 @@ The =which-key= integration adds helpful descriptions of the various keys so you
 **** lsp-ui
 
 [[https://emacs-lsp.github.io/lsp-ui/][lsp-ui]] is a set of UI enhancements built on top of =lsp-mode= which make Emacs feel even more like an IDE.  Check out the screenshots on the =lsp-ui= homepage (linked at the beginning of this paragraph) to see examples of what it can do.
+[[https://github.com/emacs-lsp/lsp-ui/blob/master/lsp-ui-doc.el][lsp-ui doc]] have other parameters to change
 
 #+begin_src emacs-lisp
 
@@ -753,10 +771,12 @@ Try these commands with =M-x=:
 This package is built on the [[https://github.com/Alexander-Miller/treemacs][treemacs]] package which might be of some interest to you if you like to have a file browser at the left side of your screen in your editor.
 
 #+begin_src emacs-lisp
-
+  
   (use-package lsp-treemacs
-    :after lsp)
-
+    :after lsp
+    :bind (:map lsp-mode-map
+                  ("M-9" . lsp-treemacs-errors-list)))
+  
 #+end_src
 
 **** lsp-ivy
@@ -867,6 +887,18 @@ You can use the pyvenv package to use =virtualenv= environments in Emacs.  The =
 #+end_src
 
 *** java
+#+begin_src emacs-lisp
+(use-package lsp-java 
+:ensure t
+:config (add-hook 'java-mode-hook 'lsp))
+#+end_src
+** Run code
+Quickly run projects with main method
+#+begin_src emacs-lisp
+(use-package quickrun 
+:ensure t
+:bind ("C-c r" . quickrun))
+#+end_src
 ** Company Mode
 
 [[http://company-mode.github.io/][Company Mode]] provides a nicer in-buffer completion interface than =completion-at-point= which is more reminiscent of what you would expect from an IDE.  We add a simple configuration to make the keybindings a little more useful (=TAB= now completes the selection and initiates completion at the current location if needed).
@@ -889,6 +921,37 @@ We also use [[https://github.com/sebastiencs/company-box][company-box]] to furth
   (use-package company-box
     :hook (company-mode . company-box-mode))
 
+#+end_src
+** Yasnippet
+#+begin_src emacs-lisp
+(use-package yasnippet :config (yas-global-mode))
+(use-package yasnippet-snippets :ensure t)
+
+#+end_src
+** FlyCheck
+Checks for error at runtime. Have z-axis pop up effect
+#+begin_src emacs-lisp
+(use-package flycheck :ensure t :init (global-flycheck-mode))
+#+end_src
+** Dap Mode
+Debug Adapter Protocol Mode.
+Used to debug.
+Dab-hydra shows keys can be used.
+#+begin_src emacs-lisp
+(use-package dap-mode
+  :ensure t
+  :after (lsp-mode)
+  :functions dap-hydra/nil
+  :config
+  (require 'dap-java)
+  :bind (:map lsp-mode-map
+         ("<f5>" . dap-debug)
+         ("M-<f5>" . dap-hydra))
+  :hook ((dap-mode . dap-ui-mode)
+    (dap-session-created . (lambda (&_rest) (dap-hydra)))
+    (dap-terminated . (lambda (&_rest) (dap-hydra/nil)))))
+
+(use-package dap-java :ensure nil)
 #+end_src
 
 ** Projectile
@@ -945,7 +1008,9 @@ Emacs' built in commenting functionality =comment-dwim= (usually bound to =M-;=)
 
 #+end_src
 
-** Rainbow Delimiters
+** Pairs
+
+*** Rainbow Delimiters
 
 [[https://github.com/Fanael/rainbow-delimiters][rainbow-delimiters]] is useful in programming modes because it colorizes nested parentheses and brackets according to their nesting depth.  This makes it a lot easier to visually match parentheses in Emacs Lisp code without having to count them yourself.
 
@@ -954,6 +1019,12 @@ Emacs' built in commenting functionality =comment-dwim= (usually bound to =M-;=)
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
 
+#+end_src
+
+*** electric-pair
+adds for brakets and braces
+#+begin_src emacs-lisp
+(electric-pair-mode 1)
 #+end_src
 
 ** MySql
